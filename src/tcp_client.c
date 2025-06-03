@@ -30,7 +30,7 @@ int tcp_client(const char* hostname, const char* port){
         exit(errno);
     }
     freeaddrinfo(peer_address);
-
+    //Main event loop
     while(1){
         
     }
