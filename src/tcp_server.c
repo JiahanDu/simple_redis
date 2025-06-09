@@ -1,6 +1,9 @@
 #include "tcp_header.h"
 #include <stdio.h>
 #include <string.h>
+#ifndef MAXEVENTS
+#define MAXEVENTS 10
+#endif
 
 int tcp_server(char* port){
     struct addrinfo hints;
@@ -50,8 +53,20 @@ int tcp_server(char* port){
         fprintf(stderr, "epoll_ctl() failed. %s, error code %d.\n", strerror(errno),errno);
         exit(errno);
     }
+    struct epoll_event, events[MAXEVENTS];
 
     while(1){
-
+        int nfds=epoll_wait(epfd,events,MAXEVENTS,-1);
+        if(nfds==-1){
+            fprintf(stderr, "epoll_wait() failed. %s, error code %d.\n", strerror(errno),errno);
+        exit(errno);
+        }
+        for(int i=0;i<nfds;i++){
+            if(events[i].data.fd==socket_listen){
+                //do stuff
+            }else{
+                //do stuff
+            }
+        }
     }
 }
