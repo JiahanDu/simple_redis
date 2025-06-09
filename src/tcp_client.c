@@ -15,7 +15,7 @@ int tcp_client(const char* hostname, const char* port){
         }else{
             fprintf(stderr,"getaddrinfo() failed. %s, error code %d.\n", gai_strerror(getaddrinfo_res),getaddrinfo_res);
         }
-        eixt(errno);
+        exit(errno);
     }
     
     int socket_peer=socket(peer_address->ai_family, peer_address->ai_socktype,peer_address->ai_protocol);
@@ -30,7 +30,7 @@ int tcp_client(const char* hostname, const char* port){
         exit(errno);
     }
     freeaddrinfo(peer_address);
-    //Main event loop
+
     while(1){
         
     }
