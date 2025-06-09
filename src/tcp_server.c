@@ -40,7 +40,6 @@ int tcp_server(char* port){
     int epfd=epoll_create1(0);
     if(epfd==-1){
         fprintf(stderr, "epoll_create1() failed. %s, error code %d.\n", strerror(errno),errno);
-        close(socket_listen);
         exit(errno);
     }
 
@@ -49,8 +48,6 @@ int tcp_server(char* port){
     ev.data.fd=socket_listen;
     if(epoll_ctl(epfd,EPOLL_CTL_ADD,socket_listen,&ev)==-1){
         fprintf(stderr, "epoll_ctl() failed. %s, error code %d.\n", strerror(errno),errno);
-        close(socket_listen);
-        close(epfd);
         exit(errno);
     }
 
