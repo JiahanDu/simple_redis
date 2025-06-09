@@ -80,7 +80,7 @@ int tcp_server(char* port){
                     fprintf(stderr, "read() failed. %s, error code %d.\n", strerror(errno),errno);
                     exit(errno);
                 }else if(read_len==0){
-                    printf("Connection closed.");
+                    printf("Connection closed.\n");
                     close(events[i].data.fd);
                 }
             }

@@ -1,6 +1,9 @@
 #include "tcp_header.h"
 #include <stdio.h>
 #include <string.h>
+#ifndef MAXBUFFER
+#define MAXBUFFER 4096
+#endif
 
 int tcp_client(const char* hostname, const char* port){
     struct addrinfo hints;
@@ -41,6 +44,21 @@ int tcp_client(const char* hostname, const char* port){
             exit(errno);
         }
         
+        if(FD_ISSET(socket_peer,&reads)){
+            char read_buffer[MAXBUFFER];
+            int bytes_received=recv(socket_peer,read,MAXBUFFER,0);
+            if(bytes_received<1){
+                printf("Connection closed.\n");
+                break;
+            }
+        }
+
+        if(FD_ISSET(0,&reads)){
+            char read_buffer[MAXBUFFER];
+            if(!fgets(read,MAXBUFFER,stdin)){
+                break;
+            }
+        }
     }
 }
 
