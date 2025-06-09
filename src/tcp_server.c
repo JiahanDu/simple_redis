@@ -4,6 +4,9 @@
 #ifndef MAXEVENTS
 #define MAXEVENTS 10
 #endif
+#ifndef MAXBUFFER
+#define MAXBUFFER 4096
+#endif
 
 int tcp_server(char* port){
     struct addrinfo hints;
@@ -53,19 +56,33 @@ int tcp_server(char* port){
         fprintf(stderr, "epoll_ctl() failed. %s, error code %d.\n", strerror(errno),errno);
         exit(errno);
     }
-    struct epoll_event, events[MAXEVENTS];
-
+    struct epoll_event events[MAXEVENTS];
+    struct sockaddr_in client_address;
     while(1){
+        socklen_t address_len=sizeof(client_address);
         int nfds=epoll_wait(epfd,events,MAXEVENTS,-1);
         if(nfds==-1){
             fprintf(stderr, "epoll_wait() failed. %s, error code %d.\n", strerror(errno),errno);
-        exit(errno);
+            exit(errno);
         }
         for(int i=0;i<nfds;i++){
             if(events[i].data.fd==socket_listen){
-                //do stuff
+                int socket_connect=accept(socket_listen,(struct sockaddr*)&client_address, &address_len);
+                if(socket_connect==-1){
+                    fprintf(stderr, "accept() failed. %s, error code %d.\n", strerror(errno),errno);
+                    exit(errno);
+                }
+                
             }else{
-                //do stuff
+                char buffer[MAXBUFFER];
+                ssize_t read_len=read(events[i].data.fd,buffer,MAXBUFFER);
+                if(read_len==-1){
+                    fprintf(stderr, "read() failed. %s, error code %d.\n", strerror(errno),errno);
+                    exit(errno);
+                }else if(read_len==0){
+                    printf("Connection closed.");
+                    close(events[i].data.fd);
+                }
             }
         }
     }
