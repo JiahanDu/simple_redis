@@ -32,6 +32,14 @@ int tcp_client(const char* hostname, const char* port){
     freeaddrinfo(peer_address);
 
     while(1){
+        fd_set reads;
+        FD_ZERO(&reads);
+        FD_SET(socket_peer,&reads);
+        
+        if(select(socket_peer+1,&reads,0,0,0)<0){
+            fprintf(stderr,"select() failed. %s, error code %d.\n",strerror(errno),errno);
+            exit(errno);
+        }
         
     }
 }
