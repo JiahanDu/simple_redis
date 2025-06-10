@@ -31,7 +31,7 @@ int tcp_client(const char* hostname, const char* port){
     }
 
     int connect_res=connect(socket_peer,peer_address->ai_addr, peer_address->ai_addrlen);
-    if(connect<0){
+    if(connect_res<0){
         fprintf(stderr,"connect() failed. %s, error code %d.\n",strerror(errno),errno);
         exit(errno);
     }
@@ -41,6 +41,7 @@ int tcp_client(const char* hostname, const char* port){
         fd_set reads;
         FD_ZERO(&reads);
         FD_SET(socket_peer,&reads);
+        FD_SET(0,&reads);
         
         if(select(socket_peer+1,&reads,0,0,0)<0){
             fprintf(stderr,"select() failed. %s, error code %d.\n",strerror(errno),errno);
@@ -49,7 +50,7 @@ int tcp_client(const char* hostname, const char* port){
         
         if(FD_ISSET(socket_peer,&reads)){
             char read_buffer[MAXBUFFER];
-            int bytes_received=recv(socket_peer,read,MAXBUFFER,0);
+            int bytes_received=recv(socket_peer,read_buffer,MAXBUFFER,0);
             if(bytes_received<1){
                 printf("Connection closed.\n");
                 break;
@@ -88,6 +89,7 @@ int tcp_client(const char* hostname, const char* port){
                 memcpy(p+num,"\r\n",2);
                 num+=2;
             }
+
         }
     }
 }
