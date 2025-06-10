@@ -120,5 +120,8 @@ HashEntry* get(HashMap* dict, char* key){
 }
 
 void resize(HashMap* dict){
-    
+    HashMap* resize=initialize(2*dict->capacity);
+    for(size_t i=0;i<dict->capacity;i++){
+        
+    }
 }
