@@ -118,3 +118,7 @@ HashEntry* get(HashMap* dict, char* key){
     }
     return NULL;
 }
+
+void resize(HashMap* dict){
+    
+}
