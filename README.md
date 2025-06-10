@@ -1,4 +1,4 @@
-# MiniRedis — A Simplified Redis Implementation in C
+# Simple_Redis — A Simplified Redis Implementation in C
 
 ## Overview
 
