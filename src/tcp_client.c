@@ -4,6 +4,9 @@
 #ifndef MAXBUFFER
 #define MAXBUFFER 4096
 #endif
+#ifndef MAXNUM
+#define MAXNUM 20
+#endif
 
 int tcp_client(const char* hostname, const char* port){
     struct addrinfo hints;
@@ -62,19 +65,23 @@ int tcp_client(const char* hostname, const char* port){
             }
             char request_buffer[MAXBUFFER];
             int count=0;
+            int start[MAXNUM];
+            int end[MAXNUM];
             for(int i=0;i<MAXBUFFER;i++){
                 if(read_buffer[i]=='\n'){
                     break;
                 }
                 if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (i==0|| read_buffer[i-1]==' ' || read_buffer[i-1]=='\t')){
+                    start[count]=i;
                     count+=1;
                 }
+                if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (read_buffer[i+1]==' ' || read_buffer[i+1]=='\t' || read_buffer[i+1]=='\n')){
+                    start[end]=i;
+                }
             }
-            int start[count];
-            int end[count];
-            for(int i=0;i<MAXBUFFER;i++){
-                
-            }
+            int num=snprintf(request_buffer, sizeof(request_buffer),"*%d\r\n",count);
+            request_buffer+=num;
+            
         }
     }
 }
