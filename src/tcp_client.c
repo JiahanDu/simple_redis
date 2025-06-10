@@ -99,3 +99,11 @@ int tcp_client(const char* hostname, const char* port){
     }
 }
 
+int main(int argc, char* argv[]){
+    if(argc<3){
+        printf("Usage example: ./tcp_client 127.0.0.1 6379.\n");
+        exit(1);
+    }
+    tcp_client(argv[1],argv[2]);
+    return 0;
+}
