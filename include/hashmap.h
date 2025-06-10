@@ -6,11 +6,8 @@
 
 typedef enum Type{
     STRING,
-    LIST,
-    SET,
-    ZSET,
     HASH,
-    UNKNOWN=-1
+    DUMMY=-1
 }Type;
 
 typedef struct HashEntry{

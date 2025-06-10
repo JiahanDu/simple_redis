@@ -83,7 +83,7 @@ HashMap* initialize(size_t capacity){
         }
         dict->buckets[i]->key=NULL;
         dict->buckets[i]->val=NULL;
-        dict->buckets[i]->type=-1;
+        dict->buckets[i]->type=DUMMY;
         dict->buckets[i]->val_size=0;
         dict->buckets[i]->next=NULL;
     }
@@ -145,4 +145,30 @@ void resize(HashMap* dict){
     free(dict->buckets);
     memcpy(dict,resize_dict,sizeof(HashMap));
     free(resize_dict);
+}
+
+void destroy_entry(HashEntry* entry){
+    free(entry->key);
+    switch(entry->type){
+        case STRING:
+            free(entry->val);
+            break;
+        case HASH:
+            destroy_map(entry->val);
+            break;
+    }
+    free(entry);
+}
+
+void destroy_map(HashMap* dict){
+    for(size_t i=0;i<dict->capacity;i++){
+        HashEntry* cur=dict->buckets[i];
+        while(cur){
+            HashEntry* temp=cur->next;
+            destroy_entry(cur);
+            cur=temp;
+        }
+    }
+    free(dict->buckets);
+    free(dict);
 }
