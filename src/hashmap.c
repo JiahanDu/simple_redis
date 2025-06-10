@@ -1,5 +1,6 @@
 #include "hashmap.h"
 #include <string.h>
+#include <errno.h>
 
 unsigned long hash(char* key){
     unsigned long hash=5381;
@@ -120,8 +121,28 @@ HashEntry* get(HashMap* dict, char* key){
 }
 
 void resize(HashMap* dict){
-    HashMap* resize=initialize(2*dict->capacity);
+    HashMap* resize_dict=initialize(2*dict->capacity);
     for(size_t i=0;i<dict->capacity;i++){
-        
+        HashEntry* head=dict->buckets[i];
+        while(head->next){
+            HashEntry* node=head->next;
+            head->next=node->next;
+            node->next=NULL;
+            unsigned long num=hash(node->key);
+            node->next=resize_dict->buckets[num%resize_dict->capacity]->next;
+            resize_dict->buckets[num%resize_dict->capacity]->next=node;
+        }
     }
+    resize_dict->size=dict->size;
+    for(size_t i=0;i<dict->capacity;i++){
+        HashEntry* head=dict->buckets[i];
+        while(head){
+            HashEntry* next=head->next;
+            destroy_entry(head);
+            head=next;
+        }
+    }
+    free(dict->buckets);
+    memcpy(dict,resize_dict,sizeof(HashMap));
+    free(resize_dict);
 }
