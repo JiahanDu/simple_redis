@@ -89,14 +89,29 @@ HashMap* initialize(size_t capacity){
 
 bool remove(HashMap* dict, char* key){
     unsigned long num=hash(key);
-    HashEntry* cur=dict->buckets[num];
-    while(!cur->next){
+    HashEntry* cur=dict->buckets[num%dict->capacity];
+    while(cur->next){
         if(strcmp(cur->next->key,key)!=0){
             cur=cur->next;
         }else{
+            HashEntry* temp=cur->next;
             cur->next=cur->next->next;
+            destroy_entry(temp);
             return true;
         }
     }
     return false;
+}
+
+void* get(HashMap* dict, char* key){
+    unsigned long num=hash(key);
+    HashEntry* cur=dict->buckets[num%dict->capacity];
+    while(cur->next){
+        if(strcmp(cur->next->key,key)!=0){
+            cur=cur->next;
+        }else{
+            return cur->next->val;
+        }
+    }
+    return NULL;
 }

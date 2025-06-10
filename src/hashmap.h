@@ -1,10 +1,22 @@
+#include <stddef.h>
+#include <stdbool.h>
 #ifndef RESIZE_FACTOR
 #define RESIZE_FACTOR 0.75
 #endif
 
+typedef enum Type{
+    STRING,
+    LIST,
+    SET,
+    ZSET,
+    HASH,
+    UNKNOWN
+}Type;
+
 typedef struct HashEntry{
     char* key;
     void* val;
+    Type type;
     size_t val_size;
     struct HashEntry* next;
 } HashEntry;
@@ -18,8 +30,9 @@ typedef struct HashMap{
 unsigned long hash(char* key);
 HashMap* initialize(size_t capacity);
 size_t size(HashMap* dict);
-void add(HashMap* dict, char* key, void* val, size_t val_size);
+void add(HashMap* dict, char* key, void* val, Type type, size_t val_size);
 bool remove(HashMap* dict, char* key);
-void* get(HashMap* dict, char* key);
+HashEntry* get(HashMap* dict, char* key);
 void resize(HashMap* dict);
-void destroy(HashMap* dict);
+void destroy_entry(HashEntry* entry);
+void destroy_map(HashMap* dict);
