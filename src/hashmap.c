@@ -23,9 +23,11 @@ void add(HashMap* dict, char* key, void* val, size_t val_size){
         cur=cur->next;
         if(strcmp(cur->key,key)==0){
             void* cpy=malloc(val_size);
-            cur->val=memcpy()
+            memcpy(cpy,val,val_size);
+            free(cur->val);
+            cur->val=cpy;
             cur->val_size=val_size;
-            break;
+            return;
         }
     }
     HashEntry* node=malloc(sizeof(HashEntry));
@@ -33,13 +35,36 @@ void add(HashMap* dict, char* key, void* val, size_t val_size){
         fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
         exit(errno);
     }
-    node->key=strcpy(key);
-    node->val=strcpy(val);
+    node->key=strdup(key);
+    if (!node->key) {
+        fprintf(stderr, "strdup() failed. %s, error code %d.\n", strerror(errno), errno);
+        exit(errno);
+    }
+    node->val=malloc(val_size);
+    if(!node->val){
+        fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
+        exit(errno);
+    }
+    memcpy(node->val,val,val_size);
     node->val_size=val_size;
+    node->next=NULL;
     cur->next=node;
 
     dict->_size+=1;
     if(dict->_size>RESIZE_FACTOR*dict->capacity){
         resize(dict);
     }
+}
+
+HashMap* initialize(size_t capacity){
+    if(capacity<10){
+        printf("capacity must be at least 10.\n");
+        exit(1);
+    }
+    HashMap* dict=malloc(sizeof(HashMap));
+    if(!dict){
+        fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
+        exit(errno);
+    }
+
 }
