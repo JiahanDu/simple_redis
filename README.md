@@ -2,7 +2,7 @@
 
 ## Overview
 
-MiniRedis is a simplified version of Redis written in C, designed to run on a Windows laptop using Ubuntu (WSL).  
+Simple_Redis is a simplified version of Redis written in C, designed to run on a Windows laptop using Ubuntu (WSL).  
 It supports core Redis functionality with a custom-built TCP server and client that communicate using the Redis Serialization Protocol (RESP).
 
 ## Features
