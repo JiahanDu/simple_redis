@@ -1,6 +1,4 @@
 #include "hashmap.h"
-#include <string.h>
-#include <errno.h>
 
 unsigned long hash(char* key){
     unsigned long hash=5381;
@@ -90,7 +88,7 @@ HashMap* initialize(size_t capacity){
     return dict;
 }
 
-bool remove(HashMap* dict, char* key){
+bool pop(HashMap* dict, char* key){
     unsigned long num=hash(key);
     HashEntry* cur=dict->buckets[num%dict->capacity];
     while(cur->next){
@@ -155,6 +153,8 @@ void destroy_entry(HashEntry* entry){
             break;
         case HASH:
             destroy_map(entry->val);
+            break;
+        case DUMMY:
             break;
     }
     free(entry);

@@ -1,5 +1,11 @@
-#include <stddef.h>
-#include <stdbool.h>
+#include <stdbool.h> 
+#include <stddef.h>    
+#include <stdio.h>    
+#include <stdlib.h>    
+#include <string.h>    
+#include <errno.h>   
+#include <stdio.h>   
+
 #ifndef RESIZE_FACTOR
 #define RESIZE_FACTOR 0.75
 #endif
@@ -28,7 +34,7 @@ unsigned long hash(char* key);
 HashMap* initialize(size_t capacity);
 size_t size(HashMap* dict);
 void add(HashMap* dict, char* key, void* val, Type type, size_t val_size);
-bool remove(HashMap* dict, char* key);
+bool pop(HashMap* dict, char* key);
 HashEntry* get(HashMap* dict, char* key);
 void resize(HashMap* dict);
 void destroy_entry(HashEntry* entry);
