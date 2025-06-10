@@ -64,6 +64,7 @@ int tcp_client(const char* hostname, const char* port){
                 break;
             }
             char request_buffer[MAXBUFFER];
+            char* p=request_buffer;
             int count=0;
             int start[MAXNUM];
             int end[MAXNUM];
@@ -73,15 +74,20 @@ int tcp_client(const char* hostname, const char* port){
                 }
                 if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (i==0|| read_buffer[i-1]==' ' || read_buffer[i-1]=='\t')){
                     start[count]=i;
-                    count+=1;
                 }
                 if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (read_buffer[i+1]==' ' || read_buffer[i+1]=='\t' || read_buffer[i+1]=='\n')){
-                    start[end]=i;
+                    end[count]=i;
+                    count+=1;
                 }
             }
-            int num=snprintf(request_buffer, sizeof(request_buffer),"*%d\r\n",count);
-            request_buffer+=num;
-            
+            int num=snprintf(p, sizeof(request_buffer),"*%d\r\n",count);
+            for(int i=0;i<count;i++){
+                num+=snprintf(p+num,sizeof(request_buffer)-num,"$%d\r\n",end[i]-start[i]+1);
+                memcpy(p+num,read_buffer+start[i],end[i]-start[i]+1);
+                num+=end[i]-start[i]+1;
+                memcpy(p+num,"\r\n",2);
+                num+=2;
+            }
         }
     }
 }
