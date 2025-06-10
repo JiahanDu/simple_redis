@@ -1,6 +1,4 @@
 #include "tcp_header.h"
-#include <stdio.h>
-#include <string.h>
 #ifndef MAXBUFFER
 #define MAXBUFFER 4096
 #endif
