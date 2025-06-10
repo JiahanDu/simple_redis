@@ -48,6 +48,7 @@ void add(HashMap* dict, char* key, void* val, Type type, size_t val_size){
     memcpy(node->val,val,val_size);
     node->val_size=val_size;
     node->next=NULL;
+    node->type=type;
     cur->next=node;
 
     dict->size+=1;

@@ -1,31 +1,33 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude -g
 BUILD_DIR = build
+SRC_DIR = src
+TEST_DIR = tests
 
-SRC = src/hashmap.c
-TEST = tests/test_hashmap.c
+SRC_FILES = $(SRC_DIR)/hashmap.c
+TEST_FILES = $(TEST_DIR)/test_hashmap.c
 
-OBJ = $(BUILD_DIR)/hashmap.o $(BUILD_DIR)/test_hashmap.o
-TARGET = test_hashmap
+OBJ_FILES = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(SRC_FILES)))
+TEST_OBJ_FILES = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(TEST_FILES)))
 
-.PHONY: all clean run
+EXEC = $(BUILD_DIR)/test_hashmap
 
-all: $(BUILD_DIR) $(TARGET)
+all: $(EXEC)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/hashmap.o: src/hashmap.c include/hashmap.h
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/test_hashmap.o: $(TEST)
+$(BUILD_DIR)/%.o: $(TEST_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJ)
+$(EXEC): $(OBJ_FILES) $(TEST_OBJ_FILES)
 	$(CC) $(CFLAGS) $^ -o $@
 
-run: all
-	./$(TARGET)
+run: $(EXEC)
+	./$(EXEC)
 
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
+	rm -rf $(BUILD_DIR)/*
