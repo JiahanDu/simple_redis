@@ -51,12 +51,29 @@ int tcp_client(const char* hostname, const char* port){
                 printf("Connection closed.\n");
                 break;
             }
+            //Currently response simply gets printed.
+            printf("%s",read_buffer);
         }
 
         if(FD_ISSET(0,&reads)){
             char read_buffer[MAXBUFFER];
-            if(!fgets(read,MAXBUFFER,stdin)){
+            if(!fgets(read_buffer,MAXBUFFER,stdin)){
                 break;
+            }
+            char request_buffer[MAXBUFFER];
+            int count=0;
+            for(int i=0;i<MAXBUFFER;i++){
+                if(read_buffer[i]=='\n'){
+                    break;
+                }
+                if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (i==0|| read_buffer[i-1]==' ' || read_buffer[i-1]=='\t')){
+                    count+=1;
+                }
+            }
+            int start[count];
+            int end[count];
+            for(int i=0;i<MAXBUFFER;i++){
+                
             }
         }
     }
