@@ -55,6 +55,7 @@ int tcp_client(const char* hostname, const char* port){
                 printf("Connection closed.\n");
                 break;
             }
+            read_buffer[bytes_received]='\0';
             //Currently response simply gets printed.
             printf("%s",read_buffer);
         }
@@ -89,7 +90,11 @@ int tcp_client(const char* hostname, const char* port){
                 memcpy(p+num,"\r\n",2);
                 num+=2;
             }
-
+            int bytes_sent=send(socket_peer,request_buffer,num,0);
+            if(bytes_sent<0){
+                fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
+                exit(errno);
+            }
         }
     }
 }
