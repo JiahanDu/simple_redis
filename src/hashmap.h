@@ -10,7 +10,7 @@ typedef enum Type{
     SET,
     ZSET,
     HASH,
-    UNKNOWN
+    UNKNOWN=-1
 }Type;
 
 typedef struct HashEntry{

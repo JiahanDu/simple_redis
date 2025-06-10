@@ -16,7 +16,7 @@ size_t size(HashMap* dict){
     return dict->size;
 }
 
-void add(HashMap* dict, char* key, void* val, size_t val_size){
+void add(HashMap* dict, char* key, void* val, Type type, size_t val_size){
     unsigned long num=hash(key)%dict->capacity;
     HashEntry* cur=dict->buckets[num];
     while(cur->next){
@@ -26,6 +26,7 @@ void add(HashMap* dict, char* key, void* val, size_t val_size){
             memcpy(cpy,val,val_size);
             free(cur->val);
             cur->val=cpy;
+            cur->type=type;
             cur->val_size=val_size;
             return;
         }
@@ -50,8 +51,8 @@ void add(HashMap* dict, char* key, void* val, size_t val_size){
     node->next=NULL;
     cur->next=node;
 
-    dict->_size+=1;
-    if(dict->_size>RESIZE_FACTOR*dict->capacity){
+    dict->size+=1;
+    if(dict->size>RESIZE_FACTOR*dict->capacity){
         resize(dict);
     }
 }
@@ -81,6 +82,7 @@ HashMap* initialize(size_t capacity){
         }
         dict->buckets[i]->key=NULL;
         dict->buckets[i]->val=NULL;
+        dict->buckets[i]->type=-1;
         dict->buckets[i]->val_size=0;
         dict->buckets[i]->next=NULL;
     }
@@ -97,20 +99,21 @@ bool remove(HashMap* dict, char* key){
             HashEntry* temp=cur->next;
             cur->next=cur->next->next;
             destroy_entry(temp);
+            dict->size-=1;
             return true;
         }
     }
     return false;
 }
 
-void* get(HashMap* dict, char* key){
+HashEntry* get(HashMap* dict, char* key){
     unsigned long num=hash(key);
     HashEntry* cur=dict->buckets[num%dict->capacity];
     while(cur->next){
         if(strcmp(cur->next->key,key)!=0){
             cur=cur->next;
         }else{
-            return cur->next->val;
+            return cur->next;
         }
     }
     return NULL;
