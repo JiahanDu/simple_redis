@@ -19,7 +19,7 @@ unsigned long hash(char* key);
 HashMap* initialize(size_t capacity);
 size_t size(HashMap* dict);
 void add(HashMap* dict, char* key, void* val, size_t val_size);
-void remove(HashMap* dict, char* key);
+bool remove(HashMap* dict, char* key);
 void* get(HashMap* dict, char* key);
 void resize(HashMap* dict);
 void destroy(HashMap* dict);

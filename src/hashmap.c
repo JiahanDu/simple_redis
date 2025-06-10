@@ -66,5 +66,37 @@ HashMap* initialize(size_t capacity){
         fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
         exit(errno);
     }
+    dict->size=0;
+    dict->capacity=capacity;
+    dict->buckets=malloc(sizeof(HashEntry*)*capacity);
+    if(!dict->buckets){
+        fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
+        exit(errno);
+    }
+    for(size_t i=0;i<capacity;i++){
+        dict->buckets[i]=malloc(sizeof(HashEntry));
+        if(!dict->buckets[i]){
+            fprintf(stderr,"malloc() failed. %s, error code %d.\n", strerror(errno),errno);
+            exit(errno);
+        }
+        dict->buckets[i]->key=NULL;
+        dict->buckets[i]->val=NULL;
+        dict->buckets[i]->val_size=0;
+        dict->buckets[i]->next=NULL;
+    }
+    return dict;
+}
 
+bool remove(HashMap* dict, char* key){
+    unsigned long num=hash(key);
+    HashEntry* cur=dict->buckets[num];
+    while(!cur->next){
+        if(strcmp(cur->next->key,key)!=0){
+            cur=cur->next;
+        }else{
+            cur->next=cur->next->next;
+            return true;
+        }
+    }
+    return false;
 }
