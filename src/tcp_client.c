@@ -76,7 +76,14 @@ int tcp_client(const char* hostname, const char* port){
                 memmove(read_buffer,p,strlen(p)+1);
                 bytes_received-=(p-read_buffer);
             }else if(read_buffer[0]=='$'){
-
+                read_buffer[bytes_received]='\0';
+                char* p=strstr(read_buffer,"\r\n");
+                if(!p){
+                    continue;
+                }
+                strncpy(read_result,read_buffer+1,p-read_buffer-1);
+                read_result[p - read_buffer - 1] = '\0';
+                received_int=strtol(read_result);
             }
         }
 
