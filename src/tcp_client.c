@@ -84,6 +84,10 @@ int tcp_client(const char* hostname, const char* port){
                 strncpy(read_result,read_buffer+1,p-read_buffer-1);
                 read_result[p - read_buffer - 1] = '\0';
                 received_int=strtol(read_result);
+                if(strlen(p)<received_int+2){
+                    continue;
+                }
+                
             }
         }
 
