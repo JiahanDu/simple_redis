@@ -38,6 +38,7 @@ int tcp_client(const char* hostname, const char* port){
     char read_buffer[MAXBUFFER];
     int bytes_received=0;
     char read_result[MAXBUFFER];
+    int received_int;
 
     while(1){
         fd_set reads;
@@ -56,7 +57,7 @@ int tcp_client(const char* hostname, const char* port){
                 break;
             }
             bytes_received+=cur;
-            if(read_buffer[0]=='+'){
+            if(read_buffer[0]=='+' || read_buffer[0]==':'){
                 read_buffer[bytes_received]='\0';
                 char* p=strstr(read_buffer,"\r\n");  
                 if(!p){
@@ -64,6 +65,9 @@ int tcp_client(const char* hostname, const char* port){
                 }
                 strncpy(read_result,read_buffer+1,p-read_buffer-1);
                 read_result[p - read_buffer - 1] = '\0';
+                if(read_buffer[0]==':'){
+                    received_int=strtol(read_result);
+                }
                 printf("%s\n",read_result);
                 memset(read_result,0,MAXBUFFER);
 
