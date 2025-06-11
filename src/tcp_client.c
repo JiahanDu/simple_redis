@@ -35,6 +35,10 @@ int tcp_client(const char* hostname, const char* port){
     }
     freeaddrinfo(peer_address);
 
+    char read_buffer[MAXBUFFER];
+    int bytes_received=0;
+    char read_result[MAXBUFFER];
+
     while(1){
         fd_set reads;
         FD_ZERO(&reads);
@@ -47,15 +51,26 @@ int tcp_client(const char* hostname, const char* port){
         }
         
         if(FD_ISSET(socket_peer,&reads)){
-            char read_buffer[MAXBUFFER];
-            int bytes_received=recv(socket_peer,read_buffer,MAXBUFFER,0);
-            if(bytes_received<1){
-                printf("Connection closed.\n");
+            int cur=recv(socket_peer,read_buffer+bytes_received,MAXBUFFER-bytes_received,0);
+            if(cur<1){
                 break;
             }
-            read_buffer[bytes_received]='\0';
-            //Currently response simply gets printed.
-            printf("%s",read_buffer);
+            bytes_received+=cur;
+            if(read_buffer[0]=='+'){
+                read_buffer[bytes_received]='\0';
+                char* p=strstr(read_buffer,"\r\n");  
+                if(!p){
+                    continue;
+                }
+                strncpy(read_result,read_buffer+1,p-read_buffer-1);
+                read_result[p - read_buffer - 1] = '\0';
+                printf("%s\n",read_result);
+                memset(read_result,0,MAXBUFFER);
+
+                p+=2;
+                memmove(read_buffer,p,strlen(p)+1);
+                bytes_received-=(p-read_buffer);
+            }  
         }
 
         if(FD_ISSET(0,&reads)){
@@ -95,6 +110,7 @@ int tcp_client(const char* hostname, const char* port){
             }
         }
     }
+    return 0;
 }
 
 int main(int argc, char* argv[]){
