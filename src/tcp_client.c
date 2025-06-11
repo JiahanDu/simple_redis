@@ -39,6 +39,7 @@ int tcp_client(const char* hostname, const char* port){
     int bytes_received=0;
     char read_result[MAXBUFFER];
     int received_int;
+    int bulk_string=0;
 
     while(1){
         fd_set reads;
@@ -74,7 +75,9 @@ int tcp_client(const char* hostname, const char* port){
                 p+=2;
                 memmove(read_buffer,p,strlen(p)+1);
                 bytes_received-=(p-read_buffer);
-            }  
+            }else if(read_buffer[0]=='$'){
+
+            }
         }
 
         if(FD_ISSET(0,&reads)){
