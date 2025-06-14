@@ -3,8 +3,7 @@
 #include <stdio.h>    
 #include <stdlib.h>    
 #include <string.h>    
-#include <errno.h>   
-#include <stdio.h>   
+#include <errno.h>    
 
 #ifndef RESIZE_FACTOR
 #define RESIZE_FACTOR 0.75

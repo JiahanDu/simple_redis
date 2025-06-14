@@ -36,10 +36,9 @@ int tcp_client(const char* hostname, const char* port){
     freeaddrinfo(peer_address);
 
     char read_buffer[MAXBUFFER];
-    int bytes_received=0;
-    char read_result[MAXBUFFER];
-    int received_int;
-    int bulk_string=0;
+    ssize_t bytes_received=0;
+    ssize_t bulk_string=0;
+    int received_int=0;
 
     while(1){
         fd_set reads;
@@ -53,41 +52,42 @@ int tcp_client(const char* hostname, const char* port){
         }
         
         if(FD_ISSET(socket_peer,&reads)){
-            int cur=recv(socket_peer,read_buffer+bytes_received,MAXBUFFER-bytes_received,0);
+            ssize_t cur=recv(socket_peer,read_buffer+bytes_received,MAXBUFFER-bytes_received,0);
             if(cur<1){
                 break;
             }
             bytes_received+=cur;
+            read_buffer[bytes_received]='\0';
             if(read_buffer[0]=='+' || read_buffer[0]==':'){
-                read_buffer[bytes_received]='\0';
                 char* p=strstr(read_buffer,"\r\n");  
                 if(!p){
                     continue;
                 }
-                strncpy(read_result,read_buffer+1,p-read_buffer-1);
-                read_result[p - read_buffer - 1] = '\0';
                 if(read_buffer[0]==':'){
-                    received_int=strtol(read_result);
+                    received_int=strtol(read_buffer+1,NULL,10);
                 }
-                printf("%s\n",read_result);
-                memset(read_result,0,MAXBUFFER);
+                if(read_buffer[0]=='+'){
+                    printf("%s\n",read_buffer+1);
+                }else{
+                    printf("%d\n",received_int);
+                }
 
                 p+=2;
                 memmove(read_buffer,p,strlen(p)+1);
                 bytes_received-=(p-read_buffer);
             }else if(read_buffer[0]=='$'){
-                read_buffer[bytes_received]='\0';
                 char* p=strstr(read_buffer,"\r\n");
                 if(!p){
                     continue;
                 }
-                strncpy(read_result,read_buffer+1,p-read_buffer-1);
-                read_result[p - read_buffer - 1] = '\0';
-                received_int=strtol(read_result);
-                if(strlen(p)<received_int+2){
+                bulk_string=strtol(read_buffer+1,NULL,10);
+                p+=2;
+                if(strlen(p)<bulk_string+2){
                     continue;
                 }
-                
+                printf("%s\n",p);
+                memmove(read_buffer,p,strlen(p)+1);
+                bytes_received-=(p-read_buffer);
             }
         }
 
