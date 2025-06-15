@@ -6,7 +6,6 @@ typedef struct Node{
 
 
 typedef struct Skiplist{
-    Node* bottom;
     Node* top;
     int level;
 } Skiplist;
@@ -20,7 +19,6 @@ Skiplist* skiplistCreate() {
     head->lower=NULL;
     Skiplist* res;
     res=malloc(sizeof(Skiplist));
-    res->bottom=head;
     res->top=head;
     res->level=0;
     return res;
@@ -67,6 +65,7 @@ void skiplistAdd(Skiplist* obj, int num) {
             cur=cur->next;
         }
         prev[i]=cur;
+        cur=cur->lower;
     } 
     Node* temp[k];
     for(int i=obj->level-k;i<obj->level;i++){
@@ -75,28 +74,12 @@ void skiplistAdd(Skiplist* obj, int num) {
         node->next=NULL;
         node->lower=NULL;
         node->next=prev[i]->next;
-        prev[i]->next=NULL;
+        prev[i]->next=node;
         temp[i-(obj->level-k)]=node;
     }
     for(int i=0;i<k-1;i++){
         temp[i]->lower=temp[i+1];
     }
-}
-
-bool skiplistErase(Skiplist* obj, int num) {
-    bool res=false;
-    Node* cur=obj->top;
-    for(int i=0;i<obj->level;i++){
-        while(cur->next && cur->next<num){
-            cur=cur->next;
-        }
-        if(cur->next && cur->next->val==num){
-            cur->next=cur->next->next;
-            res=true;
-        }
-        cur=cur->lower;
-    }
-    return res;
 }
 
 void help(Node* node){
@@ -107,11 +90,30 @@ void help(Node* node){
     free(node);
 }
 
+bool skiplistErase(Skiplist* obj, int num) {
+    bool res=false;
+    Node* cur=obj->top;
+    for(int i=0;i<obj->level;i++){
+        while(cur->next && cur->next->val<num){
+            cur=cur->next;
+        }
+        if(cur->next && cur->next->val==num){
+            Node* bad=cur->next;
+            cur->next=cur->next->next;
+            free(bad);
+            res=true;
+        }
+        cur=cur->lower;
+    }
+    return res;
+}
+
 void skiplistFree(Skiplist* obj) {
     Node* cur=obj->top;
     while(cur){
         Node* new_cur=cur->lower;
-        free(cur);
+        help(cur);
         cur=new_cur;
     }
+    free(obj);
 }
