@@ -6,6 +6,40 @@
 #define MAXNUM 20
 #endif
 
+char* command_to_RESP(char* input, int length){
+    int quotes=0;
+    char res[MAXNUM];
+    char temp[100];
+    int res_p=0;
+    int temp_p=0; 
+    int count=0;
+    
+    for(int i=0;i<length;i++){
+        if(input[i]=='\"'){
+            if(quotes==0){
+                quotes+=1;
+            }else if(quotes==1){
+                quotes-=1;
+                //copy string, update everything
+            }else{
+                printf("Invalid Syntax.\n");
+                return NULL;
+            }
+        }else if(input[i]=='\\'){
+            if(i<length-1 && input[i+1]=='\"'){
+                //update stuff
+            }else{
+                printf("Invalid Syntax.\n");
+                return NULL;
+            }
+        }else{
+            //update stuff.
+        }
+    }
+    //prepend count
+
+}
+
 int tcp_client(const char* hostname, const char* port){
     struct addrinfo hints;
     memset(&hints,0,sizeof(hints));
