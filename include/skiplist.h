@@ -1,24 +1,23 @@
-#include <stdio.h>
+#include <stdbool.h>
 
 typedef struct Node{
     int val;
-    Node* next;
-    Node* lower;
-    Node* upper;
+    struct Node* next;
+    struct Node* lower;
 }Node;
 
+
 typedef struct Skiplist{
-    Node* bottom;
     Node* top;
     int level;
-}Skiplist;
+} Skiplist;
 
-Skiplist* create();
+Skiplist* skiplistCreate();
 
-int search(SkipList* obj, int target);
+bool skiplistSearch(Skiplist* obj, int target);
 
-void add(SkipList* obj, int num);
+void skiplistAdd(Skiplist* obj, int num);
 
-int remove(SkipList* obj, int num);
+bool skiplistErase(Skiplist* obj, int num);
 
-void skiplistFree(Skilist* obj);
+void skiplistFree(Skiplist* obj);
