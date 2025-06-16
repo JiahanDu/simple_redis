@@ -6,7 +6,7 @@
 #define MAXNUM 20
 #endif
 
-char* command_to_RESP(char* input, int length){
+char* command_to_RESP(char* input){
     int quotes=0;
     char res[MAXNUM];
     char temp[100];
@@ -15,7 +15,7 @@ char* command_to_RESP(char* input, int length){
     int count=0;
     bool escape=false;
 
-    for(int i=0;i<length;i++){
+    for(int i=0;i<strlen(input);i++){
         if(input[i]=='\"'){
             if(escape){
                 temp[temp_p]=input[i];
@@ -33,9 +33,9 @@ char* command_to_RESP(char* input, int length){
                     res_p+=1;
                     res[res_p]='\n';
                     res_p+=1;
-                    memset(tmep,0,sizeof(temp));
+                    memset(temp,0,sizeof(temp));
+                    temp_p=0;
                 }else{
-                    printf("Invalid Syntax.\n");
                     return NULL;
                 }
             }
@@ -48,13 +48,17 @@ char* command_to_RESP(char* input, int length){
                 if(i<length-1 && (input[i+1]=='\"' || input[i+1]=='\\')){
                     escape=true;
                 }else{
-                    printf("Invalid Syntax.\n");
                     return NULL;
                 }
             }
+        }else if(input[i]!='\t' || input[i]!=' '){
+            if(quotes>0){
+                //do stuff
+            }else{
+                //do stuff
+            }
         }else if(input[i]!='\n'){
-            temp[temp_p]=input[i];
-            temp_p+=1;
+            //do stuff
         }
     }
     char* ans=malloc(sizeof(char)*MAXBUFFER);
@@ -157,8 +161,11 @@ int tcp_client(const char* hostname, const char* port){
             if(!fgets(read_buffer,MAXBUFFER,stdin)){
                 break;
             }
-            char request_buffer[MAXBUFFER];
-            request_buffer=command_to_RESP(MAXBUFFER,strlen(read_buffer));
+            char* request_buffer=command_to_RESP(MAXBUFFER,strlen(read_buffer));
+            if(!request_buffer){
+                printf("Invalid Syntax.\n");
+                exit(1);
+            }
             int bytes_sent=send(socket_peer,request_buffer,num,0);
             if(bytes_sent<0){
                 fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
