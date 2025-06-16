@@ -13,31 +13,58 @@ char* command_to_RESP(char* input, int length){
     int res_p=0;
     int temp_p=0; 
     int count=0;
-    
+    bool escape=false;
+
     for(int i=0;i<length;i++){
         if(input[i]=='\"'){
-            if(quotes==0){
-                quotes+=1;
-            }else if(quotes==1){
-                quotes-=1;
-                //copy string, update everything
+            if(escape){
+                temp[temp_p]=input[i];
+                temp_p+=1;
+                escape=false;
             }else{
-                printf("Invalid Syntax.\n");
-                return NULL;
+                if(quotes==0){
+                    quotes+=1;
+                }else if(quotes==1){
+                    quotes-=1;
+                    count+=1;
+                    strncpy(res,temp,temp_p);
+                    res_p+=temp_p;
+                    res[res_p]='\r';
+                    res_p+=1;
+                    res[res_p]='\n';
+                    res_p+=1;
+                    memset(tmep,0,sizeof(temp));
+                }else{
+                    printf("Invalid Syntax.\n");
+                    return NULL;
+                }
             }
         }else if(input[i]=='\\'){
-            if(i<length-1 && input[i+1]=='\"'){
-                //update stuff
+            if(escape){
+                temp[temp_p]=input[i];
+                temp_p+=1;
+                escape=false;
             }else{
-                printf("Invalid Syntax.\n");
-                return NULL;
+                if(i<length-1 && (input[i+1]=='\"' || input[i+1]=='\\')){
+                    escape=true;
+                }else{
+                    printf("Invalid Syntax.\n");
+                    return NULL;
+                }
             }
-        }else{
-            //update stuff.
+        }else if(input[i]!='\n'){
+            temp[temp_p]=input[i];
+            temp_p+=1;
         }
     }
-    //prepend count
-
+    char* ans=malloc(sizeof(char)*MAXBUFFER);
+    int num=sprintf(ans,"%d",count);
+    ans[num]='\r';
+    num+=1;
+    ans[num]='\n';
+    num+=1;
+    strncpy(ans+num,res,res_p);
+    return ans;
 }
 
 int tcp_client(const char* hostname, const char* port){
@@ -131,30 +158,7 @@ int tcp_client(const char* hostname, const char* port){
                 break;
             }
             char request_buffer[MAXBUFFER];
-            char* p=request_buffer;
-            int count=0;
-            int start[MAXNUM];
-            int end[MAXNUM];
-            for(int i=0;i<MAXBUFFER;i++){
-                if(read_buffer[i]=='\n'){
-                    break;
-                }
-                if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (i==0|| read_buffer[i-1]==' ' || read_buffer[i-1]=='\t')){
-                    start[count]=i;
-                }
-                if(read_buffer[i]!=' ' && read_buffer[i]!='\t' && (read_buffer[i+1]==' ' || read_buffer[i+1]=='\t' || read_buffer[i+1]=='\n')){
-                    end[count]=i;
-                    count+=1;
-                }
-            }
-            int num=snprintf(p, sizeof(request_buffer),"*%d\r\n",count);
-            for(int i=0;i<count;i++){
-                num+=snprintf(p+num,sizeof(request_buffer)-num,"$%d\r\n",end[i]-start[i]+1);
-                memcpy(p+num,read_buffer+start[i],end[i]-start[i]+1);
-                num+=end[i]-start[i]+1;
-                memcpy(p+num,"\r\n",2);
-                num+=2;
-            }
+            request_buffer=command_to_RESP(MAXBUFFER,strlen(read_buffer));
             int bytes_sent=send(socket_peer,request_buffer,num,0);
             if(bytes_sent<0){
                 fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
