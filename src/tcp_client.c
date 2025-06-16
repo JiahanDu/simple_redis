@@ -206,7 +206,6 @@ int tcp_client(const char* hostname, const char* port){
                 printf("Invalid Syntax.\n");
                 exit(1);
             }
-            printf("%s",request_buffer);
             int bytes_sent=send(socket_peer,request_buffer,strlen(request_buffer),0);
             if(bytes_sent<0){
                 fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
