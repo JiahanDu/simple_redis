@@ -106,6 +106,7 @@ char* command_to_RESP(char* input){
     ans[ans_p]='\n';
     ans_p+=1;
     strncpy(ans+ans_p,res,res_p);
+    ans_p+=res_p;
     ans[ans_p]='\0';
     return ans;
 }
