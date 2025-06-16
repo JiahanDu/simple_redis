@@ -207,6 +207,7 @@ int tcp_client(const char* hostname, const char* port){
                 exit(1);
             }
             int bytes_sent=send(socket_peer,request_buffer,strlen(request_buffer),0);
+            free(request_buffer);
             if(bytes_sent<0){
                 fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
                 exit(errno);
