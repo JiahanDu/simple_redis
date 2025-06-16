@@ -15,7 +15,7 @@ char* command_to_RESP(char* input){
     int count=0;
     bool escape=false;
 
-    for(int i=0;i<strlen(input);i++){
+    for(int i=0;i<strlen(input)-1;i++){
         if(input[i]=='\"'){
             if(escape){
                 temp[temp_p]=input[i];
@@ -45,20 +45,38 @@ char* command_to_RESP(char* input){
                 temp_p+=1;
                 escape=false;
             }else{
-                if(i<length-1 && (input[i+1]=='\"' || input[i+1]=='\\')){
+                if(input[i+1]=='\"' || input[i+1]=='\\'){
                     escape=true;
                 }else{
                     return NULL;
                 }
             }
-        }else if(input[i]!='\t' || input[i]!=' '){
+        }else if(input[i]=='\t' || input[i]==' '){
             if(quotes>0){
-                //do stuff
+                temp[temp_p]=input[i];
+                temp_p+=1;
             }else{
-                //do stuff
+                continue;
             }
         }else if(input[i]!='\n'){
-            //do stuff
+            if(quotes>0){
+                temp[temp_p]=input[i];
+                temp_p+=1;
+            }else{
+                temp[temp_p]=input[i];
+                temp_p+=1;
+                if(input[i+1]==' ' || input[i+1]=='\t' || input[i+1]=='\n'){
+                    count+=1;
+                    strncpy(res,temp,temp_p);
+                    res_p+=temp_p;
+                    res[res_p]='\r';
+                    res_p+=1;
+                    res[res_p]='\n';
+                    res_p+=1;
+                    memset(temp,0,sizeof(temp));
+                    temp_p=0;
+                }
+            }
         }
     }
     char* ans=malloc(sizeof(char)*MAXBUFFER);
