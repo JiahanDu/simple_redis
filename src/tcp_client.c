@@ -95,6 +95,9 @@ char* command_to_RESP(char* input){
             }
         }
     }
+    if(quotes>0){
+        return NULL;
+    }
     int ans_p=0;
     char* ans=malloc(sizeof(char)*MAXBUFFER);
     ans[ans_p]='*';
@@ -203,9 +206,10 @@ int tcp_client(const char* hostname, const char* port){
             }
             char* request_buffer=command_to_RESP(read_buffer);
             if(!request_buffer){
-                printf("Invalid Syntax.\n");
-                exit(1);
+                printf("Invalid Syntax\n");
+                continue;
             }
+            printf("%s",request_buffer);
             int bytes_sent=send(socket_peer,request_buffer,strlen(request_buffer),0);
             free(request_buffer);
             if(bytes_sent<0){
