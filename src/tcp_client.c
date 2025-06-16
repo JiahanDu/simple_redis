@@ -15,7 +15,7 @@ char* command_to_RESP(char* input){
     int count=0;
     bool escape=false;
 
-    for(int i=0;i<strlen(input)-1;i++){
+    for(size_t i=0;i<strlen(input)-1;i++){
         if(input[i]=='\"'){
             if(escape){
                 temp[temp_p]=input[i];
