@@ -106,6 +106,7 @@ char* command_to_RESP(char* input){
     ans[ans_p]='\n';
     ans_p+=1;
     strncpy(ans+ans_p,res,res_p);
+    ans[ans_p]='\0';
     return ans;
 }
 
@@ -199,12 +200,13 @@ int tcp_client(const char* hostname, const char* port){
             if(!fgets(read_buffer,MAXBUFFER,stdin)){
                 break;
             }
-            char* request_buffer=command_to_RESP(MAXBUFFER);
+            char* request_buffer=command_to_RESP(read_buffer);
             if(!request_buffer){
                 printf("Invalid Syntax.\n");
                 exit(1);
             }
-            int bytes_sent=send(socket_peer,request_buffer,num,0);
+            printf("%s",request_buffer);
+            int bytes_sent=send(socket_peer,request_buffer,strlen(request_buffer),0);
             if(bytes_sent<0){
                 fprintf(stderr,"send() failed. %s, error code %d.\n",strerror(errno),errno);
                 exit(errno);
