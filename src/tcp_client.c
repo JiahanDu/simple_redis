@@ -27,7 +27,15 @@ char* command_to_RESP(char* input){
                 }else if(quotes==1){
                     quotes-=1;
                     count+=1;
-                    strncpy(res,temp,temp_p);
+                    res[res_p]='$';
+                    res_p+=1;
+                    int ans=sprintf(res+res_p,"%d",temp_p);
+                    res_p+=ans;
+                    res[res_p]='\r';
+                    res_p+=1;
+                    res[res_p]='\n';
+                    res_p+=1;
+                    strncpy(res+res_p,temp,temp_p);
                     res_p+=temp_p;
                     res[res_p]='\r';
                     res_p+=1;
@@ -67,7 +75,15 @@ char* command_to_RESP(char* input){
                 temp_p+=1;
                 if(input[i+1]==' ' || input[i+1]=='\t' || input[i+1]=='\n'){
                     count+=1;
-                    strncpy(res,temp,temp_p);
+                    res[res_p]='$';
+                    res_p+=1;
+                    int ans=sprintf(res+res_p,"%d",temp_p);
+                    res_p+=ans;
+                    res[res_p]='\r';
+                    res_p+=1;
+                    res[res_p]='\n';
+                    res_p+=1;
+                    strncpy(res+res_p,temp,temp_p);
                     res_p+=temp_p;
                     res[res_p]='\r';
                     res_p+=1;
@@ -79,13 +95,17 @@ char* command_to_RESP(char* input){
             }
         }
     }
+    int ans_p=0;
     char* ans=malloc(sizeof(char)*MAXBUFFER);
-    int num=sprintf(ans,"%d",count);
-    ans[num]='\r';
-    num+=1;
-    ans[num]='\n';
-    num+=1;
-    strncpy(ans+num,res,res_p);
+    ans[ans_p]='*';
+    ans_p+=1;
+    int num=sprintf(ans+ans_p,"%d",count);
+    ans_p+=num;
+    ans[ans_p]='\r';
+    ans_p+=1;
+    ans[ans_p]='\n';
+    ans_p+=1;
+    strncpy(ans+ans_p,res,res_p);
     return ans;
 }
 
@@ -179,7 +199,7 @@ int tcp_client(const char* hostname, const char* port){
             if(!fgets(read_buffer,MAXBUFFER,stdin)){
                 break;
             }
-            char* request_buffer=command_to_RESP(MAXBUFFER,strlen(read_buffer));
+            char* request_buffer=command_to_RESP(MAXBUFFER);
             if(!request_buffer){
                 printf("Invalid Syntax.\n");
                 exit(1);
